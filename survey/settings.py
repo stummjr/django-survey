@@ -59,7 +59,7 @@ MEDIA_ROOT = path("../media/")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media'
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -129,10 +129,13 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django_extensions',
+    'registration',
     'survey',
 )
 
-support_email = "survey@coliving.org"
+# ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_OPEN = True
+support_email = "email@some-email.com"
 
 
 # A sample logging configuration. The only tangible logging
@@ -163,3 +166,5 @@ LOGGING = {
         },
     }
 }
+
+LOGIN_REDIRECT_URL = "/"

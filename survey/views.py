@@ -3,25 +3,25 @@ from forms import ResponseForm
 from django.shortcuts import render
 from models import Survey, Category
 from django.http import HttpResponseRedirect
+from django.contrib.auth.decorators import login_required
 
 
 def Index(request):
     return render(request, 'index.html')
 
 
+@login_required
 def SurveyDetail(request, id):
     survey = Survey.objects.get(id=id)
     category_items = Category.objects.filter(survey=survey)
     categories = [c.name for c in category_items]
-    print 'categories for this survey:'
-    print categories
     if request.method == 'POST':
-        form = ResponseForm(request.POST, survey=survey)
+        form = ResponseForm(request.POST, survey=survey, request=request)
         if form.is_valid():
             response = form.save()
             return HttpResponseRedirect("/confirm/%s" % response.interview_uuid)
     else:
-        form = ResponseForm(survey=survey)
+        form = ResponseForm(survey=survey, request=request)
     return render(request, 'survey.html',
                   {'response_form': form, 'survey': survey,
                    'categories': categories})
@@ -34,3 +34,11 @@ def Confirm(request, uuid):
 
 def privacy(request):
     return render(request, 'privacy.html')
+
+
+from registration.backends.simple.views import RegistrationView
+
+
+class MyRegistrationView(RegistrationView):
+    def get_success_url(self, request, user):
+        return settings.LOGIN_REDIRECT_URL

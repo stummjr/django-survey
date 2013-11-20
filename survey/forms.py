@@ -18,15 +18,16 @@ class ResponseForm(models.ModelForm):
 
     class Meta:
         model = Response
-        fields = ('interviewee', 'comments')
+        fields = ('comments',)
 
     def __init__(self, *args, **kwargs):
         # expects a survey object to be passed in initially
+        data = kwargs.get('data')
+        self.user = kwargs.pop('request').user
         survey = kwargs.pop('survey')
         self.survey = survey
         super(ResponseForm, self).__init__(*args, **kwargs)
         self.uuid = uuid.uuid4().hex
-        data = kwargs.get('data')
         for q in survey.questions():
             self.fields["question_%d" % q.pk] = self.__build_field(q, data)
 
@@ -51,24 +52,16 @@ class ResponseForm(models.ModelForm):
         elif q.question_type == Question.INTEGER:
             field = forms.IntegerField(label=q.text)
 
+        field.required = q.required
         # if the field is required, give it a corresponding css class.
         if q.required:
-            field.required = True
             field.widget.attrs["class"] = "required"
-        else:
-            field.required = False
 
         # add the category as a css class, and add it as a data attribute
         # as well (this is used in the template to allow sorting the
         # questions by category)
         if q.category:
-            classes = field.widget.attrs.get("class")
-            if classes:
-                field.widget.attrs["class"] = (classes +
-                                               (" cat_%s" % q.category.name))
-            else:
-                field.widget.attrs["class"] = (" cat_%s" % q.category.name)
-            field.widget.attrs["category"] = q.category.name
+            self.__add_category_to_field(field, q)
 
         # initialize the form field with values from a POST request, if
         # any.
@@ -77,9 +70,20 @@ class ResponseForm(models.ModelForm):
 
         return field
 
+    def __add_category_to_field(self, field, q):
+        classes = field.widget.attrs.get("class")
+        if classes:
+            field.widget.attrs["class"] = (classes +
+                                           (" cat_%s" % q.category.name))
+        else:
+            field.widget.attrs["class"] = (" cat_%s" % q.category.name)
+        field.widget.attrs["category"] = q.category.name
+        return field
+
     def save(self, commit=True):
         response = super(ResponseForm, self).save(commit=False)
         response.survey = self.survey
+        response.interviewee = self.user
         response.interview_uuid = self.uuid
         response.save()
 

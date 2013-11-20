@@ -1,6 +1,8 @@
 import settings
 from django.contrib import admin
 from django.conf.urls import patterns, include, url
+from views import MyRegistrationView
+
 
 admin.autodiscover()
 media_url = settings.MEDIA_URL.lstrip('/').rstrip('/')
@@ -17,6 +19,8 @@ urlpatterns = patterns(
     url(r'^admin/doc/', include(
         'django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/register/$', MyRegistrationView.as_view()),
+    url(r'^accounts/', include('registration.backends.simple.urls')),
 )
 
 
@@ -24,6 +28,5 @@ urlpatterns = patterns(
 urlpatterns += patterns(
     '',
     (r'^%s/(?P<path>.*)$' % media_url, 'django.views.static.serve',
-     {'document_root': settings.MEDIA_ROOT,
-      'show_indexes': True}),
+     {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
 )

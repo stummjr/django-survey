@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
@@ -89,10 +90,8 @@ class Response(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     survey = models.ForeignKey(Survey)
-    # interviewer = models.CharField('Name of Interviewer', max_length=400)
-    interviewee = models.CharField('Name of Interviewee', max_length=400)
-    # conditions = models.TextField(
-    #     'Conditions during interview', blank=True, null=True)
+    # interviewee = models.CharField('Name of Interviewee', max_length=400)
+    interviewee = models.ForeignKey(User)
     comments = models.TextField(
         'Any additional Comments', blank=True, null=True)
     interview_uuid = models.CharField(
