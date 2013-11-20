@@ -1,7 +1,5 @@
 from django.contrib import admin
-from survey.models import AnswerSelectMultiple
-from survey.models import AnswerRadio, AnswerSelect, AnswerInteger
-from survey.models import Question, Category, Survey, Response, AnswerText
+from survey.models import Answer, Question, Category, Survey, Response
 
 
 class QuestionInline(admin.TabularInline):
@@ -25,30 +23,13 @@ class AnswerBaseInline(admin.StackedInline):
     extra = 0
 
 
-class AnswerTextInline(AnswerBaseInline):
-    model = AnswerText
-
-
-class AnswerRadioInline(AnswerBaseInline):
-    model = AnswerRadio
-
-
-class AnswerSelectInline(AnswerBaseInline):
-    model = AnswerSelect
-
-
-class AnswerSelectMultipleInline(AnswerBaseInline):
-    model = AnswerSelectMultiple
-
-
-class AnswerIntegerInline(AnswerBaseInline):
-    model = AnswerInteger
+class AnswerInline(AnswerBaseInline):
+    model = Answer
 
 
 class ResponseAdmin(admin.ModelAdmin):
-    list_display = ('interview_uuid', 'interviewer', 'created')
-    inlines = [AnswerTextInline, AnswerRadioInline, AnswerSelectInline,
-               AnswerSelectMultipleInline, AnswerIntegerInline]
+    list_display = ('interview_uuid', 'created')
+    inlines = [AnswerInline]
     # specifies the order as well as which fields to act on
     readonly_fields = ('survey', 'created', 'updated', 'interview_uuid')
 

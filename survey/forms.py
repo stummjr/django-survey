@@ -2,8 +2,7 @@ import uuid
 from django import forms
 from django.forms import models
 from django.utils.safestring import mark_safe
-from survey.models import Question, Response, AnswerText, AnswerRadio
-from survey.models import AnswerSelect, AnswerInteger, AnswerSelectMultiple
+from survey.models import Question, Response, Answer
 
 
 # blatantly stolen from
@@ -20,7 +19,7 @@ class ResponseForm(models.ModelForm):
 
     class Meta:
         model = Response
-        fields = ('interviewer', 'interviewee', 'conditions', 'comments')
+        fields = ('interviewee', 'comments')
 
     def __init__(self, *args, **kwargs):
         # expects a survey object to be passed in initially
@@ -104,6 +103,7 @@ class ResponseForm(models.ModelForm):
 
         # create an answer object for each question and associate it with this
         # response.
+
         for field_name, field_value in self.cleaned_data.iteritems():
             if field_name.startswith("question_"):
                 # warning: this way of extracting the id is very fragile and
@@ -111,22 +111,23 @@ class ResponseForm(models.ModelForm):
                 # the field name in the __init__ method of this form class.
                 q_id = int(field_name.split("_")[1])
                 q = Question.objects.get(pk=q_id)
-
-                if q.question_type == Question.TEXT:
-                    a = AnswerText(question=q)
-                    a.body = field_value
-                elif q.question_type == Question.RADIO:
-                    a = AnswerRadio(question=q)
-                    a.body = field_value
-                elif q.question_type == Question.SELECT:
-                    a = AnswerSelect(question=q)
-                    a.body = field_value
-                elif q.question_type == Question.SELECT_MULTIPLE:
-                    a = AnswerSelectMultiple(question=q)
-                    a.body = field_value
-                elif q.question_type == Question.INTEGER:
-                    a = AnswerInteger(question=q)
-                    a.body = field_value
+                a = Answer(question=q)
+                a.body = field_value
+                # if q.question_type == Question.TEXT:
+                #     a = AnswerText(question=q)
+                #     a.body = field_value
+                # elif q.question_type == Question.RADIO:
+                #     a = AnswerRadio(question=q)
+                #     a.body = field_value
+                # elif q.question_type == Question.SELECT:
+                #     a = AnswerSelect(question=q)
+                #     a.body = field_value
+                # elif q.question_type == Question.SELECT_MULTIPLE:
+                #     a = AnswerSelectMultiple(question=q)
+                #     a.body = field_value
+                # elif q.question_type == Question.INTEGER:
+                #     a = AnswerInteger(question=q)
+                #     a.body = field_value
                 print "creating answer to question %d of type %s" % (
                     q_id,
                     a.question.question_type)
