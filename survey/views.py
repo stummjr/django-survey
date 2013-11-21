@@ -1,8 +1,9 @@
 import settings
 from forms import ResponseForm
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from models import Survey, Category
 from django.http import HttpResponseRedirect
+from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
 
@@ -22,9 +23,11 @@ def SurveyDetail(request, id):
             return HttpResponseRedirect("/confirm/%s" % response.interview_uuid)
     else:
         form = ResponseForm(survey=survey, request=request)
-    return render(request, 'survey.html',
-                  {'response_form': form, 'survey': survey,
-                   'categories': categories})
+    return render_to_response('survey.html',
+                              RequestContext(request,
+                                             {'response_form': form,
+                                              'survey': survey,
+                                              'categories': categories}))
 
 
 def Confirm(request, uuid):
@@ -40,5 +43,6 @@ from registration.backends.simple.views import RegistrationView
 
 
 class MyRegistrationView(RegistrationView):
+
     def get_success_url(self, request, user):
         return settings.LOGIN_REDIRECT_URL

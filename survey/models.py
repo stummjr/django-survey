@@ -107,27 +107,3 @@ class Answer(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     body = models.TextField(blank=True, null=True)
-
-# # these type-specific answer models use a text field to allow for flexible
-# # field sizes depending on the actual question this answer corresponds to. any
-# # "required" attribute will be enforced by the form.
-
-
-# class AnswerText(AnswerBase):
-#     body = models.TextField(blank=True, null=True)
-
-
-# class AnswerRadio(AnswerBase):
-#     body = models.TextField(blank=True, null=True)
-
-
-# class AnswerSelect(AnswerBase):
-#     body = models.TextField(blank=True, null=True)
-
-
-# class AnswerSelectMultiple(AnswerBase):
-#     body = models.TextField(blank=True, null=True)
-
-
-# class AnswerInteger(AnswerBase):
-#     body = models.IntegerField(blank=True, null=True)
